@@ -9,11 +9,11 @@ function accu = exanfis(x, y, n_mfs = 5)
     mf_params(:, 2) = 2.1 - (0.2 * rand(n_mfs * n_variables, 1));
     
     for i = 1:n_variables
-        range = range(x(:, i))
+        range = range(x(:, i));
         
         % Setting `a` in range of (0.5 * tmp_a) to (1.5 * tmp_a))
         tmp_a = range / (2 * (n_mfs - 1));
-        mf_params((i - 1) * n_mfs + 1 :(i * n_mfs), 1) = tmp_a * (1.5 - rand(n_mfs, 1));
+        mf_params((i - 1) * n_mfs + 1 : (i * n_mfs), 1) = tmp_a * (1.5 - rand(n_mfs, 1));
         clear tmp_a;
         
         % Setting `c`
@@ -21,9 +21,26 @@ function accu = exanfis(x, y, n_mfs = 5)
         diff_c = (max(x(:, i)) - min(x(:, i))) / (n_mfs - 1);
         
         mf_params((i - 1) * n_mfs + 1, 3) = tmp_c(1) + (diff_c / 2) * rand();
-        mf_params((i - 1) * n_mfs + 2 :(i * n_mfs) - 1, 3) = tmp_c(2: end - 1) + (diff_c / 2) * (1 - 2 * rand());
+        mf_params((i - 1) * n_mfs + 2 : (i * n_mfs) - 1, 3) = tmp_c(2 : end - 1) + (diff_c / 2) * (1 - 2 * rand());
         mf_params((i * n_mfs), 3) = tmp_c(end) - (diff_c / 2) * rand();
     end
     
-    return(0);
+    % `firing_strengths` is a matrix with each row representing single
+    % observation and values of columns represent firing strengths of all
+    % membership functions for all input variables
+    firing_strengths = zeros(n_observations, n_mfs * n_variables);
+    
+    for i = 1:n_observations
+        for j = 1:n_variables
+            for k = 1:n_mfs
+                tmp_fire = gbellmf(x(i, j), mf_params((j - 1) * n_mfs + k, :));
+            end
+            firing_strengths(i, (j - 1) * n_mfs + 1 : (j * n_mfs)) = tmp_fire;
+        end
+    end
+    
+    % Making rules considering all possibilities
+    
+    
+    return;
 end
