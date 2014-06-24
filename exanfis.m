@@ -67,5 +67,40 @@ function accu = exanfis(x_train, y_train, x_test, y_test, n_mfs = 5)
     % Training complete
     % Now preparing to test
     
-    return;
+    [n_observations_test, n_variables_test] = size(x_test);
+    
+    firing_strengths_test = zeros(n_observations_test, n_mfs * n_variables_test);
+    
+    for i = 1:n_observations_test
+        for j = 1:n_variables_test
+            for k = 1:n_mfs
+                tmp_fire = gbellmf(x_test(i, j), mf_params((j - 1) * n_mfs + k, :));
+            end
+            firing_strengths_test(i, (j - 1) * n_mfs + 1 : (j * n_mfs)) = tmp_fire;
+        end
+    end
+    
+    % Find firings for rules
+    % Same rules should be here, implying that rules have to be stored in
+    % some form.
+    % CODE HERE
+    % Assuming firing for rules are calculated and are stored as
+    % rule_firings_test = zeros(n_observations_test, n_rules);
+    
+    x_new_test = [x_test', ones(1, n_observations_test)];
+    
+    H_test = zeros(n_rules * (n_variables_test + 1), n_observations_test);
+    tmp_h = zeros(n_variables_test + 1, n_observations_test);
+    
+    for i = 1:n_rules
+        for j = 1:n_observations_test
+            tmp_h(:, j) = x_new_test(:, j) * rule_firings_test(j, i);
+        end
+        
+        H_test((i - 1) * (n_variables_test + 1) + 1 : i * (n_variables_test + 1), :) = tmp_h;
+    end
+    
+    output_test = P * H_test;
+    
+    return mean(output_test == y_test);
 end
