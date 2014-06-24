@@ -27,3 +27,9 @@ This function is expected to return the accuracy on the test data.
 Head over [here](https://archive.ics.uci.edu/ml/datasets.html).
 There are nice benchmark datasets there.
 Also please keep upating this doc for anything that we can do here.
+
+### Experiments
+-   One thing that we can do is reducing the number of rules.
+    - Currently if there are 5 membership functions and 10 attributes, then rules are all that are possible, i.e. 5<sup>10</sup>.
+    - But there are techniques that use clustering to reduce the rules considerably based on structure in data.
+    - This will ultimately reduce our computation and thus seems a nice thing to try.
