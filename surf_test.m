@@ -1,5 +1,4 @@
 % This is a bit more complicated function
-% It has more variables, and here, exanfis is faster than anfis
 
 n_pts = 51;
 x = 1:6;

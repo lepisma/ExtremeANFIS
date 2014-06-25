@@ -24,9 +24,6 @@ There is a function `exanfis` that takes following inputs
 -   Open them in matlab and push `run and time`.
 -   This will display results from profiler, telling everything we need to know about timings.
 -   There is no code for accuracy as of now, but the graphs in `curve_test.m` are encouraging.
--   But few things are not encouraging
-    - `exanfis` is slower for function with single variable.
-    - The problem is that most of the time is eaten by `evalfis` in `exanfis`, it should be stripped down.
 
 ### Testing data
 Head over [here](https://archive.ics.uci.edu/ml/datasets.html).

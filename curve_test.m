@@ -1,6 +1,4 @@
 % This is a test code for testing simple curve generation
-% Here, anfis is faster :(
-% Also, most of the time in exanfis function is taken while running evalfis
 
 n_pts = 51;
 x = linspace(-1, 1, n_pts)';

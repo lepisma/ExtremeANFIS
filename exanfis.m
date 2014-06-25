@@ -31,7 +31,7 @@ function fis = exanfis(x_train, y_train, n_mfs)
     % For each input instance
     for i = 1:n_observations
         % Finding firings
-        [~, IRR] = evalfis(x_train(i, :), fis);
+        [~, IRR] = evalfismex(x_train(i, :), fis, 101);
         rule_firings = min(IRR, [], 2);
         
         tmp_in = repmat([x_train(i, :) 1], [n_rules, 1]);
