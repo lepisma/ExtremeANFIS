@@ -11,9 +11,9 @@ There is a function `exanfis` that takes following inputs
 -   `y_train` : The ouput matrix. Here observations are arranged columnwise (this can be changed to suite better the structure, but thats quite immaterial as of now).
 -   `n_mfs` : An intger specifying the number of mfs to use for each attribute of data.
 
-This function is expected to return a trained fis that can be used for evaluation.
+This function is expected to return a trained fis that can be used for evaluatio.
 
-*This function is not tested, just blind coded as of now*
+The function `fis_accuracy` returns the accuracy but only for classification task. i.e. it doesn't rms error.
 
 ### Problems and ToDos
 -   Generate random mf parameters, rather than uniform.
@@ -34,3 +34,10 @@ Also please keep upating this doc for anything that we can do here.
     - Currently if there are 5 membership functions and 10 attributes, then rules are all that are possible, i.e. 5<sup>10</sup>.
     - But there are techniques that use clustering to reduce the rules considerably based on structure in data.
     - This will ultimately reduce our computation and thus seems a nice thing to try.
+
+-   Second thing is about generation of membership functions
+    - Currently they are generated uniformly, using grid partition.
+    - The idea in paper was to generate them randomly, but here is the catch,
+        - In ELM, the weights were randomly chosen because they allow the output side to get more variety of abstractions from inputs, from which the appropriate outputs can be learned.
+        - But, here things are different, randomly choosing parameters of membership functions can be a bad representation of input data.
+        - What we can try is, to use FCM clustering (genfis3) or genfis2. This seem a better choice for starting with.
