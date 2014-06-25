@@ -13,7 +13,6 @@ There is a function `exanfis` that takes following inputs
 
 ### Problems and ToDos
 -   Generate random mf parameters, rather than uniform.
--   Code to find the time used in the learning process.
 -   Testing the code. Few special testing cases follows :
     - **Multi output dataset**
     - **Single attribute input dataset**
