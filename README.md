@@ -7,11 +7,11 @@ Extreme learning in adaptive fuzzy inference system
 **The older code is deprecated, still if needed, switch to `custom-fis` branch**
 
 There is a function `exanfis` that takes following inputs
--   `x_train` : Observations arranged in rows, each column is an attribute.
+-   `x_train` : Observations arranged in rows, each column is a variable.
 -   `y_train` : The ouput matrix. Here observations are arranged columnwise (this can be changed to suite better the structure, but thats quite immaterial as of now).
--   `n_mfs` : An intger specifying the number of mfs to use for each attribute of data.
+-   `n_mfs` : An integer specifying the number of membership functions to use for each data variable.
 
-### Problems and ToDos
+### Todos
 -   Generate random mf parameters, rather than uniform.
 -   Testing the code. Few special testing cases follows :
     - **Multi output dataset**
@@ -22,11 +22,11 @@ There is a function `exanfis` that takes following inputs
 ### Test notes
 -   There are test files like `curve_test.m`.
 -   Open them in matlab and push `run and time`.
--   This will display results from profiler, telling everything we need to know about.
+-   This will display results from profiler, telling everything we need to know about timings.
 -   There is no code for accuracy as of now, but the graphs in `curve_test.m` are encouraging.
 -   But few things are not encouraging
-    - `eanfis` is slower for function with single variable.
-    - The problem is that most of the time is eaten by `evalfis` in `eanfis`, it can be stripped down.
+    - `exanfis` is slower for function with single variable.
+    - The problem is that most of the time is eaten by `evalfis` in `exanfis`, it should be stripped down.
 
 ### Testing data
 Head over [here](https://archive.ics.uci.edu/ml/datasets.html).
