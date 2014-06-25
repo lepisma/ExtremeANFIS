@@ -12,7 +12,7 @@ data_test = data(2 : 3 : n_pts, :);
 figure(1)
 plot(data_train(:, 1), data_train(:, 2), 'o', data_test(:, 1), data_test(:, 2), 'x')
 
-n_mfs = 5000;
+n_mfs = 5;
 
 a_fis = anfis(data_train, n_mfs);
 
