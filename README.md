@@ -17,7 +17,6 @@ This function is expected to return a trained fis that can be used for evaluatio
 
 ### Problems and ToDos
 -   Generate random mf parameters, rather than uniform.
--   Make an accuracy finding function.
 -   Code to find the time used in the learning process.
 -   Testing the code. Few special testing cases follows :
     - **Multi output dataset**
