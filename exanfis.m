@@ -34,7 +34,7 @@ function fis = exanfis(x_train, y_train, n_mfs)
         [~, IRR] = evalfis(x_train(i, :), fis);
         rule_firings = min(IRR, [], 2);
         
-        tmp_in = repmat([x_train(i, :) 1]', [n_rules, 1]);
+        tmp_in = repmat([x_train(i, :) 1], [n_rules, 1]);
         tmp_wt = repmat(rule_firings, [1, n_variables + 1]);
         
         h_col = tmp_in .* tmp_wt;
