@@ -1,6 +1,5 @@
 % This is a bit more complicated function
 
-n_pts = 51;
 x = 1:6;
 y = x;
 z = x;
