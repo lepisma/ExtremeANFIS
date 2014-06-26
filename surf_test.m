@@ -12,4 +12,4 @@ n_mfs = 5;
 
 a_fis = anfis(data_train, n_mfs);
 
-e_fis = exanfis(data_train(:, 1:4), o, n_mfs);
+e_fis = exanfis(data_train, n_mfs, 'gbellmf');
