@@ -1,23 +1,28 @@
 % This is a test code for testing simple curve generation
 
-n_pts = 51;
+n_pts = 101;
 x = linspace(-1, 1, n_pts)';
 y = 0.6 * sin(pi * x) + 0.3 * sin(3 * pi * x) + 0.1 * sin(5 * pi * x);
 data = [x y];
 data_train = data(1 : 2 : n_pts, :);
-data_test = data(2 : 3 : n_pts, :);
+data_test = data(2 : 2 : n_pts, :);
 
 figure(1)
 plot(data_train(:, 1), data_train(:, 2), 'o', data_test(:, 1), data_test(:, 2), 'x')
+title('Main data');
 
-n_mfs = 5;
+n_mfs = 10;
 
 a_fis = anfis(data_train, n_mfs);
+a_err = rmse(a_fis, data_test);
 
-e_fis = exanfis(data_train(:, 1), data_train(:, 2)', n_mfs);
+e_fis = exanfis(data_train, n_mfs, 'gbellmf');
+e_err = rmse(e_fis, data_test);
 
 figure(2)
 plot(data_test(:, 1), evalfis(data_test(:, 1), a_fis));
+title(a_err);
 
 figure(3)
 plot(data_test(:, 1), evalfis(data_test(:, 1), e_fis));
+title(e_err);

@@ -1,18 +1,19 @@
-function fis = exanfis(x_train, y_train, n_mfs)
+function fis = exanfis(data_train, n_mfs, mf_type)
     
     %----------------------------------------------------------------------
     % TRAINING
     
     % Generating FIS
-    % `genfis1` needs data so that the last column in matrix is the output
-    % while all columns before are inputs.
-    % So we need to merge x and y
+    % Last column is output data, while all others are input data
+    
+    
+    x_train = data_train(:, 1 : end - 1);
+    y_train = data_train(:, end)';
+    
     [n_observations, n_variables] = size(x_train);
     
-    data = [x_train, y_train'];
-    mf_type = 'gbellmf';
-    
-    fis = genfis1(data, n_mfs, mf_type);
+    fis = genfis1(data_train, n_mfs, mf_type);
+    %fis = genfis3(x_train, y_train', 'sugeno', n_mfs);
     
     % Now we have all rules made, and membership functions uniformly
     % distributed.
