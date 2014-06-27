@@ -7,23 +7,26 @@ Extreme learning in adaptive fuzzy inference system
 **The older code is deprecated, still if needed, switch to `custom-fis` branch**
 
 There is a function `exanfis` that takes following inputs
--   `x_train` : Observations arranged in rows, each column is a variable.
--   `y_train` : The ouput matrix. Here observations are arranged columnwise (this can be changed to suite better the structure, but thats quite immaterial as of now).
+-   `data_train` : Observations arranged in rows, each column is an input variable, except the last one, which is the output.
 -   `n_mfs` : An integer specifying the number of membership functions to use for each data variable.
+-   `mf_type` : A string representing the type of mf to use.
+-   `epochs` : The number of times, random guesses should be made.
+-   `data_test` : Data for testing purpose.
 
-### Todos
--   Generate random mf parameters, rather than uniform.
+### Working
+-   Current code works by randomly generating input parameters, and checking the one which fits best.
+-   Also the case with uniform parameters is considered.
+
+### Problems and Todos
+-   The error in training data **should be really small in `exanfis`**, but its not. Please check the code if there is some implementation problem for output parameter generation.
 -   Testing the code. Few special testing cases follows :
-    - **Multi output dataset**
-    - **Single attribute input dataset**
-
-*Since performance on regression has already been considered, our first aim will be classification. Single class, then multiclass*
+    - *Multi output dataset*
+    - *Single attribute input dataset*
 
 ### Test notes
 -   There are test files like `curve_test.m`.
 -   Open them in matlab and push `run and time`.
 -   This will display results from profiler, telling everything we need to know about timings.
--   There is no code for accuracy as of now, but the graphs in `curve_test.m` are encouraging.
 
 ### Testing data
 Head over [here](https://archive.ics.uci.edu/ml/datasets.html).
@@ -41,4 +44,4 @@ Also please keep upating this doc for anything that we can do here.
     - The idea in paper was to generate them randomly, but here is the catch,
         - In ELM, the weights were randomly chosen because they allow the output side to get more variety of abstractions from inputs, from which the appropriate outputs can be learned.
         - But, here things are different, randomly choosing parameters of membership functions can be a bad representation of input data.
-        - What we can try is, to use FCM clustering (genfis3) or genfis2. This seem a better choice for starting with.
+        - We can reduce the randomness by using genetic algorithms.
