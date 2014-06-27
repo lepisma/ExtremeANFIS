@@ -6,27 +6,47 @@ function [fis, errlist] = exanfis(data_train, n_mfs, mf_type, epochs, data_test)
     % Generating FIS
     % Last column is output data, while all others are input data
     
-    
     x_train = data_train(:, 1 : end - 1);
     y_train = data_train(:, end)';
     
     [n_observations, n_variables] = size(x_train);
     
+    % Fis with uniform mfs and no output
     fis = genfis1(data_train, n_mfs, mf_type);
     
     n_rules = size(fis.rule, 2);
+    
     H = zeros(n_rules * (n_variables + 1), n_observations);
     
-    err = -1;
+    % Generating output for uniform mfs
+    uniform_output_params = gen_output_params(fis, x_train, y_train, n_observations, n_variables, n_rules, H);
     
-    opt_mf = -1;
-    opt_out = -1;
+    % Inserting output parameters in fis
+    for i = 1:n_rules
+        fis.output.mf(i).params = uniform_output_params(i, :);
+    end
     
-    errs = [];
+    % Finding rmse for uniform mfs
+    uniform_err = rmse(fis, data_test);
+    
+    % Flag declaring that current least error is from uniform mfs
+    uniform_flag = 1;
+    
+    % Optimum input output parameters and least error
+    opt_mf = fis.input;
+    opt_out = uniform_output_params;
+    least_err = uniform_err;
+    
+    % List of errors for each epoch (for debugging)
+    errlist = zeros(1, epochs + 1);
+    
+    % First element is of uniform error
+    errlist(1) = uniform_err;
     
     for e = 1:epochs
+        % Random guesses
         % Generating random mf parameters
-        mf_params = gen_random_mf(n_mfs, n_variables, x_train);
+        mf_params = gen_random_mf(x_train, n_variables, n_mfs);
 
         % Inserting the values of random parameters in generated fis
         for j = 1 : n_variables
@@ -35,57 +55,55 @@ function [fis, errlist] = exanfis(data_train, n_mfs, mf_type, epochs, data_test)
             end
         end
         
-         % For each input instance
-        for i = 1:n_observations
-            % Finding firings
-            [~, IRR] = evalfismex(x_train(i, :), fis, 101);
-            rule_firings = prod(IRR, 2);
-
-            h_col = (repmat([x_train(i, :) 1], [n_rules, 1]) .* repmat(rule_firings, [1, n_variables + 1]))';
-            H(:, i) = h_col(:);
-        end
-    
-        % ELM thing
-        P = y_train * pinv(H);
-
-        % Regularized inverse
-        %P = (eye(n_rules * (n_variables + 1)) / 1000 + H * H') \ H * y_train';
-
-        P = reshape(P, [n_variables + 1, n_rules])';
+        % Finding output parameters
+        output_params = gen_output_params(fis, x_train, y_train, n_observations, n_variables, n_rules, H);
         
         % Inserting the values of calculated parameters in generated fis
         for i = 1:n_rules
-            fis.output.mf(i).params = P(i, :);
+            fis.output.mf(i).params = output_params(i, :);
         end
         
+        % Finding error
         curr_err = rmse(fis, data_test);
         
-        errs = [errs, curr_err];
+        % Appending error to list
+        errlist(e + 1) = curr_err;
         
-        if (err == -1) || (curr_err < err)
-            err = curr_err;
+        % If error is less than least error, then update optimum values
+        if curr_err < least_err
+            least_err = curr_err;
             opt_mf = mf_params;
-            opt_out = P;
+            opt_out = output_params;
+            
+            % Set the flag to 0
+            uniform_flag = 0;
         end
     end
     
-    errlist = errs;
-    
-    % Inserting the values of random parameters in generated fis
-    for j = 1 : n_variables
-        for k = 1 : n_mfs
-            fis.input(j).mf(k).params = opt_mf((j - 1) * n_mfs + k, :);
+    % If the flag is 0, then uniform mfs are not the answer
+    % Need to push optimum input parameters in fis
+    if uniform_flag == 0
+        % Inserting the values of random parameters in generated fis
+        for j = 1 : n_variables
+            for k = 1 : n_mfs
+                fis.input(j).mf(k).params = opt_mf((j - 1) * n_mfs + k, :);
+            end
         end
+    else
+        % Set the input parameters using stored value
+        fis.input = opt_mf;
     end
-    
+
+    % Setting the optimum output parameters
     for i = 1:n_rules
         fis.output.mf(i).params = opt_out(i, :);
     end
     
 end
 
-function  mf_params = gen_random_mf(n_mfs, n_variables, x_train)
-
+function mf_params = gen_random_mf(x_train, n_variables, n_mfs)
+    % Returns randomly generated mf parameters
+    
     total_mfs = n_mfs * n_variables;
     mf_params = zeros(total_mfs, 3);
     
@@ -110,9 +128,30 @@ function  mf_params = gen_random_mf(n_mfs, n_variables, x_train)
     end
 end
 
+function output_params = gen_output_params(fis, x_train, y_train, n_observations, n_variables, n_rules, H)
+    % Returns output parameters using elm method
+
+    % For each input instance
+    for i = 1:n_observations
+        % Finding firings
+        [~, IRR] = evalfismex(x_train(i, :), fis, 101);
+        rule_firings = prod(IRR, 2);
+
+        H(:, i) = repmat([x_train(i, :) 1]', n_rules, 1) .* reshape(repmat(rule_firings, 1, n_variables + 1)', n_rules * (n_variables + 1), 1);
+    end
+
+    % ELM thing
+    P = y_train * pinv(H);
+
+    % Regularized inverse
+    %P = (eye(n_rules * (n_variables + 1)) / 10000 + H * H') \ H * y_train';
+
+    output_params = reshape(P, [n_variables + 1, n_rules])';
+end
+
 function error = rmse(fis, data_test)
-    % Calculates the root mean squared error for a test data on a given
-    % fis
+    % Calculates the root mean squared error for a test data
+    % Faster than method in rmse.m
 
     output = evalfismex(data_test(:, 1 : end - 1), fis, 101);
 

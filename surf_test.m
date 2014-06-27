@@ -34,13 +34,13 @@ data_test = [x y z o];
 
 % Data generation done
 
-n_mfs = 6;
+n_mfs = 3;
 
 a_fis = anfis(data_train, n_mfs);
 a_err = rmse(a_fis, data_test)
 
-[e_fis, errs] = exanfis(data_train, n_mfs, 'gbellmf', 20, data_test);
+[e_fis, errs] = exanfis(data_train, n_mfs, 'gbellmf', 60, data_test);
 e_err = rmse(e_fis, data_test);
-errs
+errs'
 
 e_err
