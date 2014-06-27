@@ -10,16 +10,18 @@ function [fis, errlist] = exanfis(data_train, n_mfs, mf_type, epochs, data_test)
     y_train = data_train(:, end)';
     
     [n_observations, n_variables] = size(x_train);
+    var_ranges = range(x_train);
     
     % Fis with uniform mfs and no output
     fis = genfis1(data_train, n_mfs, mf_type);
     
     n_rules = size(fis.rule, 2);
     
-    H = zeros(n_rules * (n_variables + 1), n_observations);
+    x_for_h = repmat([x_train ones(n_observations, 1)]', n_rules, 1);
+    rule_mat = zeros(n_rules, n_observations);
     
     % Generating output for uniform mfs
-    uniform_output_params = gen_output_params(fis, x_train, y_train, n_observations, n_variables, n_rules, H);
+    uniform_output_params = gen_output_params(fis, x_train, x_for_h, rule_mat, y_train, n_observations, n_variables, n_rules);
     
     % Inserting output parameters in fis
     for i = 1:n_rules
@@ -46,7 +48,7 @@ function [fis, errlist] = exanfis(data_train, n_mfs, mf_type, epochs, data_test)
     for e = 1:epochs
         % Random guesses
         % Generating random mf parameters
-        mf_params = gen_random_mf(x_train, n_variables, n_mfs);
+        mf_params = gen_random_mf(x_train, var_ranges, n_variables, n_mfs);
 
         % Inserting the values of random parameters in generated fis
         for j = 1 : n_variables
@@ -56,7 +58,7 @@ function [fis, errlist] = exanfis(data_train, n_mfs, mf_type, epochs, data_test)
         end
         
         % Finding output parameters
-        output_params = gen_output_params(fis, x_train, y_train, n_observations, n_variables, n_rules, H);
+        output_params = gen_output_params(fis, x_train, x_for_h, rule_mat, y_train, n_observations, n_variables, n_rules);
         
         % Inserting the values of calculated parameters in generated fis
         for i = 1:n_rules
@@ -101,7 +103,7 @@ function [fis, errlist] = exanfis(data_train, n_mfs, mf_type, epochs, data_test)
     
 end
 
-function mf_params = gen_random_mf(x_train, n_variables, n_mfs)
+function mf_params = gen_random_mf(x_train, var_ranges, n_variables, n_mfs)
     % Returns randomly generated mf parameters
     
     total_mfs = n_mfs * n_variables;
@@ -112,15 +114,14 @@ function mf_params = gen_random_mf(x_train, n_variables, n_mfs)
     
     % Settings `a` and `c` for each attribute in dataset
     for i = 1:n_variables
-        rg = range(x_train(:, i));
         
         % Setting `a` in range of (0.5 * tmp_a) to (1.5 * tmp_a))
-        tmp_a = rg / (2 * (n_mfs - 1));
+        tmp_a = var_ranges(i) / (2 * (n_mfs - 1));
         mf_params((i - 1) * n_mfs + 1 : (i * n_mfs), 1) = tmp_a * (1.5 - rand(n_mfs, 1));
         
         % Setting `c`
         tmp_c = linspace(min(x_train(:, i)), max(x_train(:, i)), n_mfs);
-        diff_c = rg / (n_mfs - 1);
+        diff_c = var_ranges(i) / (n_mfs - 1);
         
         mf_params((i - 1) * n_mfs + 1, 3) = tmp_c(1) + (diff_c / 2) * rand();
         mf_params((i - 1) * n_mfs + 2 : (i * n_mfs) - 1, 3) = tmp_c(2 : end - 1) + (diff_c / 2) * (1 - 2 * rand());
@@ -128,20 +129,18 @@ function mf_params = gen_random_mf(x_train, n_variables, n_mfs)
     end
 end
 
-function output_params = gen_output_params(fis, x_train, y_train, n_observations, n_variables, n_rules, H)
+function output_params = gen_output_params(fis, x_train, x_for_h, rule_mat, y_train, n_observations, n_variables, n_rules)
     % Returns output parameters using elm method
 
     % For each input instance
     for i = 1:n_observations
         % Finding firings
         [~, IRR] = evalfismex(x_train(i, :), fis, 101);
-        rule_firings = prod(IRR, 2);
-
-        H(:, i) = repmat([x_train(i, :) 1]', n_rules, 1) .* reshape(repmat(rule_firings, 1, n_variables + 1)', n_rules * (n_variables + 1), 1);
+        rule_mat(:, i) = prod(IRR, 2);
     end
 
     % ELM thing
-    P = y_train * pinv(H);
+    P = y_train * pinv(x_for_h .* rule_mat(repmat(1 : n_rules, n_variables + 1, 1), :));
 
     % Regularized inverse
     %P = (eye(n_rules * (n_variables + 1)) / 10000 + H * H') \ H * y_train';
