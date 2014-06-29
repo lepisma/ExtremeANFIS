@@ -138,9 +138,13 @@ function output_params = gen_output_params(fis, x_train, x_for_h, rule_mat, y_tr
         [~, IRR] = evalfismex(x_train(i, :), fis, 101);
         rule_mat(:, i) = prod(IRR, 2);
     end
+    
+    % getting normalised weights
+    sum_col = repmat(sum(rule_mat),n_rules,1);
+    norm_rule_mat = rule_mat ./ sum_col;
 
     % ELM thing
-    P = y_train * pinv(x_for_h .* rule_mat(repmat(1 : n_rules, n_variables + 1, 1), :));
+    P = y_train * pinv(x_for_h .* norm_rule_mat(repmat(1 : n_rules, n_variables + 1, 1), :));
 
     % Regularized inverse
     %P = (eye(n_rules * (n_variables + 1)) / 10000 + H * H') \ H * y_train';
