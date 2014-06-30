@@ -9,7 +9,6 @@ Extreme learning in adaptive fuzzy inference system
 There is a function `exanfis` that takes following inputs
 -   `data_train` : Observations arranged in rows, each column is an input variable, except the last one, which is the output.
 -   `n_mfs` : An integer specifying the number of membership functions to use for each data variable.
--   `mf_type` : A string representing the type of mf to use.
 -   `epochs` : The number of times, random guesses should be made.
 -   `data_test` : Data for testing purpose.
 
@@ -18,13 +17,13 @@ There is a function `exanfis` that takes following inputs
 -   Also the case with uniform parameters is considered.
 
 ### Problems and Todos
--   The error in training data **should be really small in `exanfis`**, but its not. Please check the code if there is some implementation problem for output parameter generation.
+-   Add genetic algorithms.
 -   Testing the code. Few special testing cases follows :
     - *Multi output dataset*
     - *Single attribute input dataset*
 
 ### Test notes
--   There are test files like `curve_test.m`.
+-   There are test files like `single_var.m`.
 -   Open them in matlab and push `run and time`.
 -   This will display results from profiler, telling everything we need to know about timings.
 
@@ -38,10 +37,3 @@ Also please keep upating this doc for anything that we can do here.
     - Currently if there are 5 membership functions and 10 attributes, then rules are all that are possible, i.e. 5<sup>10</sup>.
     - But there are techniques that use clustering to reduce the rules considerably based on structure in data.
     - This will ultimately reduce our computation and thus seems a nice thing to try.
-
--   Second thing is about generation of membership functions
-    - Currently they are generated uniformly, using grid partition.
-    - The idea in paper was to generate them randomly, but here is the catch,
-        - In ELM, the weights were randomly chosen because they allow the output side to get more variety of abstractions from inputs, from which the appropriate outputs can be learned.
-        - But, here things are different, randomly choosing parameters of membership functions can be a bad representation of input data.
-        - We can reduce the randomness by using genetic algorithms.
