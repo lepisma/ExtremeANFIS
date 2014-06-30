@@ -1,6 +1,6 @@
-% This is a test code for testing simple curve generation
+% Function with single variable
 
-n_pts = 51;
+n_pts = 501;
 x = linspace(-1, 1, n_pts)';
 y = 0.6 * sin(pi * x) + 0.3 * sin(3 * pi * x) + 0.1 * sin(5 * pi * x);
 data = [x y];
@@ -13,12 +13,14 @@ title('Main data');
 
 n_mfs = 10;
 
-a_fis = anfis(data_train, n_mfs);
+a_fis = anfis(data_train, n_mfs, 10);
 a_err = rmse(a_fis, data_test);
 
-e_fis = exanfis(data_train, n_mfs, 'gbellmf', 10, data_test);
+e_fis = exanfis(data_train, n_mfs, 10, data_test);
 e_err = rmse(e_fis, data_test);
 
+% Plots
+% Test error as title of plots
 figure(2)
 plot(data_test(:, 1), evalfis(data_test(:, 1), a_fis));
 title(a_err);

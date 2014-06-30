@@ -1,4 +1,4 @@
-% This is a bit more complicated function
+% A function with three variables
 
 x = 1 : 6;
 x = repmat(x, 36, 1);
@@ -34,13 +34,18 @@ data_test = [x y z o];
 
 % Data generation done
 
-n_mfs = 3;
+n_mfs = 5;
 
-a_fis = anfis(data_train, n_mfs);
-a_err = rmse(a_fis, data_test)
+a_fis = anfis(data_train, n_mfs, 20);
 
-[e_fis, errs] = exanfis(data_train, n_mfs, 'gbellmf', 60, data_test);
-e_err = rmse(e_fis, data_test);
+[e_fis, errs] = exanfis(data_train, n_mfs, 20, data_test);
+% Errors for epochs
 errs'
 
-e_err
+% Train errors
+a_err_train = rmse(a_fis, data_train)
+e_err_train = rmse(e_fis, data_train)
+
+% Test errors
+a_err_test = rmse(a_fis, data_test)
+e_err_test = rmse(e_fis, data_test)
