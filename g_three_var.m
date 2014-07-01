@@ -36,16 +36,18 @@ data_test = [x y z o];
 
 n_mfs = 4;
 
-a_fis = anfis(data_train, n_mfs, 20);
-
-[e_fis, errs] = exanfis(data_train, n_mfs, 20, data_test);
+[g_fis, g_errs] = ganfis(data_train, n_mfs, data_test);
+[e_fis, e_errs] = exanfis(data_train, n_mfs, 100, data_test);
 % Errors for epochs
-errs'
+g_mean = mean(g_errs)
+e_mean = mean(e_errs)
+g_std = std(g_errs)
+e_std = std(e_errs)
 
 % Train errors
-a_err_train = rmse(a_fis, data_train)
+g_err_train = rmse(g_fis, data_train)
 e_err_train = rmse(e_fis, data_train)
 
 % Test errors
-a_err_test = rmse(a_fis, data_test)
+g_err_test = rmse(g_fis, data_test)
 e_err_test = rmse(e_fis, data_test)

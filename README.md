@@ -20,7 +20,6 @@ There is a function `exanfis` that takes following inputs
 -   Add genetic algorithms.
 -   Testing the code. Few special testing cases follows :
     - *Multi output dataset*
-    - *Single attribute input dataset*
 
 ### Test notes
 -   There are test files like `single_var.m`.
