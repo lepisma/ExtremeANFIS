@@ -1,5 +1,5 @@
-function fisses = addfis(data_train, n_mfs, epochs, data_test)
-    % Additive ensemble of extreme anfis for regression purpose
+function fisses = exanfis(data_train, n_mfs, data_test)
+    % Additive ensemble of extreme anfis
     %
     % Parameters
     % ----------
@@ -7,62 +7,66 @@ function fisses = addfis(data_train, n_mfs, epochs, data_test)
     %   data for training, last column represents output
     % `n_mfs`
     %   number of membership functions for each input attribute
-    % `epochs`
-    %   number of elms
     % `data_test`
     %   data for testing, used for finding the best input parameter set
     %
     % Returns
     % -------
     % `fisses`
-    %   the fuzzy inference systems tuned using Extreme ANFIS
+    %   the fuzzy inference systems, combination of whose results
+    %   give final output
     
-    [n_observations, n_variables] = size(data_train(:, 1 : end - 1));
+    n_variables = size(data_train(:, 1 : end - 1), 2);
+    
     var_ranges = range(data_train(:, 1 : end - 1));
     
-    fisses = cell(epochs);
-    
+    fisses = cell(2);
     
     % Generating fuzzy inference systems with random inputs
-    for e = 1 : epochs
+    for e = 1 : 2
+        
         fisses{e} = genfis1(data_train, n_mfs, 'gbellmf');
         input_params = gen_random_mf(data_train(:, 1 : end - 1), var_ranges, n_variables, n_mfs);
         
         % Inserting the values of random parameters
         for j = 1 : n_variables
+            
             for k = 1 : n_mfs
+                
                 fisses{e}.input(j).mf(k).params = input_params((j - 1) * n_mfs + k, :);
+            
             end
+        
         end
+    
     end
     
     n_rules = size(fisses{1}.rule, 2);
     
-    for e = 1 : epochs
+    for e = 1 : 2
         
         if e == 1
+            
             train_ep = data_train;
             residual = data_train(:, end);
+        
         elseif e == 2
+            
             train_ep = data_test;
-            residual = data_test(:, end) - evalfismex(data_test(:, ...
-                                                              1 : ...
-                                                              end - ...
-                                                              1), ...
-                                                      fisses{1}, 101);
-        end
+            residual = data_test(:, end) - evalfismex(data_test(:, 1 :  end - 1), fisses{1}, 101);
+        
+        end 
         
         rule_mat = zeros(n_rules, size(train_ep, 1));
-        x_for_h = repmat([train_ep(:, 1 : end - 1) ones(size(train_ep, ...
-                                                              1), ...
-                                                            1)]', ...
-                             n_rules, 1);
+        x_for_h = repmat([train_ep(:, 1 : end - 1) ones(size(train_ep, 1), 1)]', n_rules, 1);
         
         % Finding output parameters
         for i = 1 : size(train_ep, 1)
+           
             % Finding firings
             [~, IRR] = evalfismex(train_ep(i, 1 : end - 1), fisses{e}, 101);
             rule_mat(:, i) = prod(IRR, 2);
+        
         end
 
         % getting normalised weights
@@ -79,7 +83,9 @@ function fisses = addfis(data_train, n_mfs, epochs, data_test)
         
         % Inserting the values of output parameters
         for i = 1:n_rules
+            
             fisses{e}.output.mf(i).params = output_params(i, :);
+        
         end
         
     end
@@ -109,6 +115,7 @@ function mf_params = gen_random_mf(x_train, var_ranges, n_variables, n_mfs)
         mf_params((i - 1) * n_mfs + 1, 3) = tmp_c(1) + (diff_c / 2) * rand();
         mf_params((i - 1) * n_mfs + 2 : (i * n_mfs) - 1, 3) = tmp_c(2 : end - 1) + (diff_c / 2) * (1 - 2 * rand());
         mf_params((i * n_mfs), 3) = tmp_c(end) - (diff_c / 2) * rand();
-        %  mf_params((i - 1) * n_mfs + 1 : (i * n_mfs), 3) = max(x_train(:, i)) - var_ranges(i) * rand(n_mfs, 1);
+    
     end
+
 end
