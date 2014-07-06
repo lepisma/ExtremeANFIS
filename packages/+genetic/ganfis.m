@@ -29,24 +29,35 @@ function [fis, global_error_list] = ganfis(data_train, n_mfs, data_test)
     for e = 1 : epochs
         
         if e == 1
+            
             for p = 1 : n_gen
+                
                 gen_input_params{p} = gen_random_mf(x_train, var_ranges, n_variables, n_mfs);
+            
             end
+        
         end
         
         for p = 1 : n_gen
+           
             % Inserting the values of random parameters
             for j = 1 : n_variables
+                
                 for k = 1 : n_mfs
+                    
                     fis.input(j).mf(k).params = gen_input_params{p}((j - 1) * n_mfs + k, :);
+                
                 end
+            
             end
 
             % Finding output parameters
             for i = 1:n_observations
+                
                 % Finding firings
                 [~, IRR] = evalfismex(x_train(i, :), fis, 101);
                 rule_mat(:, i) = prod(IRR, 2);
+            
             end
 
             % getting normalised weights
@@ -63,7 +74,9 @@ function [fis, global_error_list] = ganfis(data_train, n_mfs, data_test)
 
             % Inserting the values of output parameters
             for i = 1:n_rules
+                
                 fis.output.mf(i).params = output_params(i, :);
+            
             end
 
             % Finding error
@@ -72,10 +85,13 @@ function [fis, global_error_list] = ganfis(data_train, n_mfs, data_test)
             gen_error_list(p) = current_error;
             
             if (p == e == 1) || (current_error < least_error)
+                
                 least_error = current_error;
                 opt_in_params = fis.input;
                 opt_out_params = fis.output;
+            
             end
+        
         end
         
         gen_input_params = evolve(gen_input_params, gen_error_list, x_train, var_ranges, n_variables, n_mfs);
@@ -111,24 +127,32 @@ function mf_params = gen_random_mf(x_train, var_ranges, n_variables, n_mfs)
         mf_params((i - 1) * n_mfs + 1, 3) = tmp_c(1) + (diff_c / 2) * rand();
         mf_params((i - 1) * n_mfs + 2 : (i * n_mfs) - 1, 3) = tmp_c(2 : end - 1) + (diff_c / 2) * (1 - 2 * rand());
         mf_params((i * n_mfs), 3) = tmp_c(end) - (diff_c / 2) * rand();
+    
     end
+
 end
 
 function new_list = evolve(in_list, gen_error_list, x_train, var_ranges, n_variables, n_mfs)
+    
     [~, order] = sort(gen_error_list);
     new_list = cell(1, 5);
     new_list{1} = (in_list{order(1)} + in_list{order(2)}) / 2;
     
     for p = 2 : 4
+        
         new_list{p} = gen_random_mf(x_train, var_ranges, n_variables, n_mfs);
+    
     end
     
     new_list{5} = (in_list{order(end)} + in_list{order(end - 1)}) / 2;
+
 end
+
 function error = rmse(fis, data_test)
     % Calculates the root mean squared error for a test data
     % Faster than method in rmse.m
 
     output = evalfismex(data_test(:, 1 : end - 1), fis, 101);
     error = rms(output - data_test(:, end));
+
 end

@@ -1,5 +1,5 @@
-function fisses = exanfis(data_train, n_mfs, data_test)
-    % Additive ensemble of extreme anfis
+function fisses = bagfis(data_train, n_mfs, epochs, n_samples)
+    % Ensemble of extreme anfis using bagging
     %
     % Parameters
     % ----------
@@ -7,30 +7,40 @@ function fisses = exanfis(data_train, n_mfs, data_test)
     %   data for training, last column represents output
     % `n_mfs`
     %   number of membership functions for each input attribute
-    % `data_test`
-    %   data for testing, used for finding the best input parameter set
+    % `epochs`
+    %   number of times random input parameters should be generated
+    % `n_samples`
+    %   number of sample to be selected for each bag
     %
     % Returns
     % -------
     % `fisses`
-    %   the fuzzy inference systems, combination of whose results
-    %   give final output
+    %   the fuzzy inference systems
     
-    n_variables = size(data_train(:, 1 : end - 1), 2);
-    
+    [n_observations, n_variables] = size(data_train(:, 1 : end - 1));
     var_ranges = range(data_train(:, 1 : end - 1));
     
-    fisses = cell(2);
+    fisses = cell(1, epochs);
     
-    % Generating fuzzy inference systems with random inputs
-    for e = 1 : 2
+    % Generating fuzzy inference systems
+    for e = 1 : epochs
         
         fisses{e} = genfis1(data_train, n_mfs, 'gbellmf');
+    
+    end
+    
+    n_rules = size(fisses{1}.rule, 2);
+    
+    rule_mat = zeros(n_rules, n_samples);
+    
+    for e = 1 : epochs
+        
+        % Random guesses
         input_params = gen_random_mf(data_train(:, 1 : end - 1), var_ranges, n_variables, n_mfs);
         
         % Inserting the values of random parameters
         for j = 1 : n_variables
-            
+           
             for k = 1 : n_mfs
                 
                 fisses{e}.input(j).mf(k).params = input_params((j - 1) * n_mfs + k, :);
@@ -38,31 +48,14 @@ function fisses = exanfis(data_train, n_mfs, data_test)
             end
         
         end
-    
-    end
-    
-    n_rules = size(fisses{1}.rule, 2);
-    
-    for e = 1 : 2
         
-        if e == 1
-            
-            train_ep = data_train;
-            residual = data_train(:, end);
-        
-        elseif e == 2
-            
-            train_ep = data_test;
-            residual = data_test(:, end) - evalfismex(data_test(:, 1 :  end - 1), fisses{1}, 101);
-        
-        end 
-        
-        rule_mat = zeros(n_rules, size(train_ep, 1));
-        x_for_h = repmat([train_ep(:, 1 : end - 1) ones(size(train_ep, 1), 1)]', n_rules, 1);
+        % Sampling data for each fis
+        indices = round((n_observations - 1) * rand(1, n_samples)) + 1;
+        train_ep = data_train(indices, :);
         
         % Finding output parameters
-        for i = 1 : size(train_ep, 1)
-           
+        for i = 1:n_samples
+            
             % Finding firings
             [~, IRR] = evalfismex(train_ep(i, 1 : end - 1), fisses{e}, 101);
             rule_mat(:, i) = prod(IRR, 2);
@@ -72,13 +65,15 @@ function fisses = exanfis(data_train, n_mfs, data_test)
         % getting normalised weights
         rule_mat = bsxfun(@rdivide, rule_mat, sum(rule_mat));
         
+        x_for_h = repmat([train_ep(:, 1 : end - 1) ones(n_samples, 1)]', n_rules, 1);
+        
         % Inverse using Moore - Penrose psuedo inverse
         H = x_for_h .* rule_mat(repmat(1 : n_rules, n_variables + 1, 1), :);
         %P = y_train * pinv(H);
 
         % Inverse with regularization
-        P = (eye(n_rules * (n_variables + 1)) / 10000 + H * H') \ H * residual;
-       
+        P = (eye(n_rules * (n_variables + 1)) / 10000 + H * H') \ H * train_ep(:, end);
+
         output_params = reshape(P, [n_variables + 1, n_rules])';
         
         % Inserting the values of output parameters
@@ -87,7 +82,7 @@ function fisses = exanfis(data_train, n_mfs, data_test)
             fisses{e}.output.mf(i).params = output_params(i, :);
         
         end
-        
+    
     end
     
 end
@@ -117,5 +112,5 @@ function mf_params = gen_random_mf(x_train, var_ranges, n_variables, n_mfs)
         mf_params((i * n_mfs), 3) = tmp_c(end) - (diff_c / 2) * rand();
     
     end
-
+    
 end

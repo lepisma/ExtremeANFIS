@@ -17,7 +17,7 @@ function [fis, errlist] = exanfis(data_train, n_mfs, epochs, data_test)
     % `fis`
     %   the fuzzy inference system tuned using Extreme ANFIS
     % `errlist`
-    %   the list of error for each epoch (for debugging purpose only)
+    %   the list of error for each epoch (for debugging purpose)
     
     x_train = data_train(:, 1 : end - 1);
     y_train = data_train(:, end)';
@@ -37,27 +37,36 @@ function [fis, errlist] = exanfis(data_train, n_mfs, epochs, data_test)
     opt_out_params = -1;
     least_err = -1;
     
-    % List of errors for each epoch (+1 for uniform mfs) for debugging
-    errlist = zeros(1, epochs + 1);
+    % List of errors for each epoch for debugging
+    errlist = zeros(1, epochs);
     
-    for e = 1 : epochs + 1
+    for e = 1 : epochs
+        
         if e ~= 1
+           
             % Random guesses
             input_params = gen_random_mf(x_train, var_ranges, n_variables, n_mfs);
             
             % Inserting the values of random parameters
             for j = 1 : n_variables
+                
                 for k = 1 : n_mfs
+                    
                     fis.input(j).mf(k).params = input_params((j - 1) * n_mfs + k, :);
+                
                 end
+            
             end
+        
         end
         
         % Finding output parameters
         for i = 1:n_observations
+           
             % Finding firings
             [~, IRR] = evalfismex(x_train(i, :), fis, 101);
             rule_mat(:, i) = prod(IRR, 2);
+        
         end
 
         % getting normalised weights
@@ -74,7 +83,9 @@ function [fis, errlist] = exanfis(data_train, n_mfs, epochs, data_test)
         
         % Inserting the values of output parameters
         for i = 1:n_rules
+            
             fis.output.mf(i).params = output_params(i, :);
+        
         end
         
         % Finding error
@@ -85,15 +96,20 @@ function [fis, errlist] = exanfis(data_train, n_mfs, epochs, data_test)
         
         % If error is less than least error, then update optimum values
         if e == 1
+            
             opt_out_params = fis.output;
             least_err = current_err;
+        
         end
         
         if current_err < least_err
+            
             least_err = current_err;
             opt_in_params = fis.input;
             opt_out_params = fis.output;
+        
         end
+    
     end
     
     % Inserting best parameters
@@ -125,7 +141,9 @@ function mf_params = gen_random_mf(x_train, var_ranges, n_variables, n_mfs)
         mf_params((i - 1) * n_mfs + 1, 3) = tmp_c(1) + (diff_c / 2) * rand();
         mf_params((i - 1) * n_mfs + 2 : (i * n_mfs) - 1, 3) = tmp_c(2 : end - 1) + (diff_c / 2) * (1 - 2 * rand());
         mf_params((i * n_mfs), 3) = tmp_c(end) - (diff_c / 2) * rand();
+    
     end
+
 end
 
 function error = rmse(fis, data_test)
@@ -134,4 +152,5 @@ function error = rmse(fis, data_test)
 
     output = evalfismex(data_test(:, 1 : end - 1), fis, 101);
     error = rms(output - data_test(:, end));
+
 end
