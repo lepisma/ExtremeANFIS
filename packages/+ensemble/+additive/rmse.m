@@ -1,4 +1,4 @@
-function err = error(fisses, data_test)
+function err = rmse(fisses, data_test)
 % Returns the root mean square error on the additive ensemble
 
 add_out = zeros(size(data_test, 1), 1);
