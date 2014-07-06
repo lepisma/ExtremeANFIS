@@ -19,7 +19,9 @@ data_train = [data_train; dat([min_indices max_indices], :)];
 
 n_mfs = 2;
 
-fisses = enxanfis(data_train, n_mfs, 2, 200);
+addpath('../packages/');
+
+fisses = extreme.enxanfis(data_train, n_mfs, 2, 200);
 
 [fin_err, err_list] = cent_err(fisses, data_test);
 

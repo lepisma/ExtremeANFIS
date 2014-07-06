@@ -35,7 +35,9 @@ data_train = [data_train; data_extreme];
 
 n_mfs = 3;
 
-fisses = enxanfis(data_train(:, 13:17), n_mfs, 20, 59);
+addpath('../packages/');
+
+fisses = extreme.enxanfis(data_train(:, 13:17), n_mfs, 20, 59);
 
 [fin_err, err_list] = cent_err(fisses, data_test(:, 13:17));
 

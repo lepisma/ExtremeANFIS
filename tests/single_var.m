@@ -13,11 +13,13 @@ title('Main data');
 
 n_mfs = 10;
 
-a_fis = anfis(data_train, n_mfs, 10);
-a_err = rmse(a_fis, data_test);
+addpath('../packages/');
 
-e_fis = exanfis(data_train, n_mfs, 10, data_test);
-e_err = rmse(e_fis, data_test);
+a_fis = anfis(data_train, n_mfs, 10);
+a_err = extreme.rmse(a_fis, data_test);
+
+e_fis = extreme.exanfis(data_train, n_mfs, 10, data_test);
+e_err = extreme.rmse(e_fis, data_test);
 
 % Plots
 % Test error as title of plots
