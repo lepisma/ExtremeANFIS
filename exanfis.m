@@ -65,10 +65,10 @@ function [fis, errlist] = exanfis(data_train, n_mfs, epochs, data_test)
 
         % Inverse using Moore - Penrose psuedo inverse
         H = x_for_h .* rule_mat(repmat(1 : n_rules, n_variables + 1, 1), :);
-        P = y_train * pinv(H);
+        %P = y_train * pinv(H);
 
         % Inverse with regularization
-        %P = (eye(n_rules * (n_variables + 1)) / 10000 + H * H') \ H * y_train';
+        P = (eye(n_rules * (n_variables + 1)) / 10000 + H * H') \ H * y_train';
 
         output_params = reshape(P, [n_variables + 1, n_rules])';
         

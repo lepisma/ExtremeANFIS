@@ -24,7 +24,7 @@ There is a function `exanfis` that takes following inputs
 ### Test notes
 -   There are test files like `single_var.m`.
 -   Open them in matlab and push `run and time`.
--   This will display results from profiler, telling everything we need to know about timings.
+eaemdemacs-   This will display results from profiler, telling everything we need to know about timings.
 
 ### Testing data
 Head over [here](https://archive.ics.uci.edu/ml/datasets.html).
