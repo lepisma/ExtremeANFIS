@@ -1,6 +1,6 @@
 % Binary classification task with iris dataset
 
-dat = importdata('../data/cancer.csv');
+dat = importdata('../data/iris.csv');
 dat = dat.data;
 
 [~, min_indices] = min(dat);
@@ -21,10 +21,6 @@ n_mfs = 2;
 
 addpath('../packages/');
 
-fisses = extreme.enxanfis(data_train, n_mfs, 2, 200);
+fis = extreme.exanfis(data_train, n_mfs, 2, data_test);
 
-[fin_err, err_list] = cent_err(fisses, data_test);
-
-err_list'
-min(err_list)
-fin_err
+err = extreme.error(fis, data_test)

@@ -7,26 +7,40 @@ data = [x y];
 data_train = data(1 : 2 : n_pts, :);
 data_test = data(2 : 2 : n_pts, :);
 
-figure(1)
-plot(data_train(:, 1), data_train(:, 2), 'o', data_test(:, 1), data_test(:, 2), 'x')
-title('Main data');
-
 n_mfs = 10;
 
 addpath('../packages/');
+% Training ANFIS
+a_fis = anfis(data_train, n_mfs, 20);
 
-a_fis = anfis(data_train, n_mfs, 10);
-a_err = extreme.rmse(a_fis, data_test);
+% Training Extreme ANFIS
+e_fis = extreme.exanfis(data_train, n_mfs, 20, data_test);
 
-e_fis = extreme.exanfis(data_train, n_mfs, 10, data_test);
-e_err = extreme.rmse(e_fis, data_test);
+% Training Genetic Extreme ANFIS
+ga_fis = genetic.ganfis(data_train, n_mfs, data_test);
 
-% Plots
-% Test error as title of plots
-figure(2)
-plot(data_test(:, 1), evalfis(data_test(:, 1), a_fis));
-title(a_err);
+% Training Bagged Extreme ANFIS
+ba_fisses = ensemble.bagging.bagfis(data_train, n_mfs, 20, 200);
 
-figure(3)
-plot(data_test(:, 1), evalfis(data_test(:, 1), e_fis));
-title(e_err);
+% Training Additive Extreme ANFIS
+add_fisses = ensemble.additive.addfis(data_train, n_mfs, data_test);
+
+% Errors ANFIS
+a_fis_train = extreme.rmse(a_fis, data_train)
+a_fis_test = extreme.rmse(a_fis, data_test)
+
+% Errors Extreme ANFIS
+e_fis_train = extreme.rmse(e_fis, data_train)
+e_fis_test = extreme.rmse(e_fis, data_test)
+
+% Errors Genetic Extreme ANFIS
+ga_fis_train = genetic.rmse(ga_fis, data_train)
+ga_fis_test = genetic.rmse(ga_fis, data_test)
+
+% Errors Bagged Extreme ANFIS
+ba_fisses_train = ensemble.bagging.rmse(ba_fisses, data_train)
+ba_fisses_test = ensemble.bagging.rmse(ba_fisses, data_test)
+
+% Errors Additive Extreme ANFIS
+add_fisses_train = ensemble.additive.rmse(add_fisses, data_train)
+add_fisses_test = ensemble.additive.rmse(add_fisses, data_test)

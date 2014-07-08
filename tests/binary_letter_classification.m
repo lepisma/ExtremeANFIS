@@ -37,10 +37,6 @@ n_mfs = 3;
 
 addpath('../packages/');
 
-fisses = extreme.exanfis(data_train(:, 13:17), n_mfs, 20, 59);
+fis = extreme.exanfis(data_train(:, 13 : 17), n_mfs, 20, data_test(:, 13 : 17));
 
-[fin_err, err_list] = cent_err(fisses, data_test(:, 13:17));
-
-err_list'
-min(err_list)
-fin_err
+err = extreme.error(fis, data_test(:, 13 : 17))
