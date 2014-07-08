@@ -1,6 +1,6 @@
 % Binary classification task with iris dataset
 
-dat = importdata('data/cancer.csv');
+dat = importdata('../data/cancer.csv');
 dat = dat.data;
 
 [~, min_indices] = min(dat);

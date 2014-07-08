@@ -1,7 +1,7 @@
 % Binary classification task
 
-A = importdata('data/A.csv');
-B = importdata('data/A.csv');
+A = importdata('../data/A.csv');
+B = importdata('../data/A.csv');
 
 A = [A ones(size(A, 1), 1)];
 B = [B zeros(size(B, 1), 1)];
