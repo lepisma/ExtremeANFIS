@@ -2,7 +2,7 @@ function weights = post_bag_elm(fisses, data_train)
 
 % Finds the weights to be used for finding final output
 
-n_fis = size(fisses);
+n_fis = length(fisses);
 weights = zeros(1, n_fis);
 
 n_observations = size(data_train, 1);
