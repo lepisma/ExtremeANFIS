@@ -11,7 +11,6 @@ Extreme learning in adaptive fuzzy inference system
 - `error.m` finds percent error for classification (binary) task.
 - Directory `tests` contains test code organised according to package names.
 - Directory `data` contains datasets for classification tasks.
-- `docs` contains few docs including the paper on **Extreme ANFIS**.
 
 ### Current state
 
