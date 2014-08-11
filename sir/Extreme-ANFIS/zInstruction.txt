@@ -1,0 +1,16 @@
+this is revised generalized version of extremeanfis algorithm to reduce training time and execution time further
+
+Example:(steps)
+
+[finalRMSE, Parameters] = extremeanfis(trainData,nOutput,nMembershipFn,nEpoches);
+output=simextremeanfis(data, Parameters);
+[OutputFismat] = extremeanfis2fis(trainData, Parameters);     %optional if sugeno-FIS is required.
+
+{NOTE=> this algorithm is used with any type of system (MISO/SISO/MIMO)}
+
+USES:- 	Modelling MISO/MIMO plants
+	Multiclass classification problem
+	regression problem
+	inverse control
+	supportive controller
+	online identification
