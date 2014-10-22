@@ -25,26 +25,28 @@ chk_data(:, 4) = x_t(619 : 1118);
 chk_data(:, 5) = x_t(625 : 1124);
 
 in_fis = genfis1(trn_data, 2);
+
 anfis_out = anfis(trn_data, in_fis, 30);
 
 exanfis_out = extreme.exanfis(trn_data, 2, 30, chk_data);
 
-bag_out = ensemble.bagging.bagfis(trn_data, 2, 30, 1000);
+%bag_out = ensemble.bagging.bagfis(trn_data, 2, 30, 1000);
 
-add_out = ensemble.additive.addfis(trn_data, 2, chk_data);
+%add_out = ensemble.additive.addfis(trn_data, 2, chk_data);
 
 extreme.rmse(anfis_out, chk_data)
 extreme.rmse(exanfis_out, chk_data)
-ensemble.bagging.rmse(bag_out, chk_data)
-ensemble.additive.rmse(add_out, chk_data)
+%ensemble.bagging.rmse(bag_out, chk_data)
+%ensemble.additive.rmse(add_out, chk_data)
 
-weights = ensemble.bagging.post_bag_elm(bag_out, trn_data);
-ensemble.bagging.rmse2(bag_out, weights, chk_data)
+%weights = ensemble.bagging.post_bag_elm(bag_out, trn_data);
+%ensemble.bagging.rmse2(bag_out, weights, chk_data)
 
 input = [trn_data(:, 1:4); chk_data(:, 1:4)];
 anfis_output = evalfis(input, anfis_out);
 exanfis_output = evalfis(input, exanfis_out);
 
+index = 119:1118;
 diffan = x_t(index)-anfis_output;
 diffen = x_t(index)-exanfis_output;
 plot(time(index), diffan, 'color', 'b'); hold on;
