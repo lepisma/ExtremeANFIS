@@ -12,6 +12,9 @@
 % 2) Parameters => Structure containing trained parameters
 
 function [finalRMSE, Parameters] = extremeanfis(trainData,nMembershipFn,nOutput,nEpoches)
+
+% Setting defaults
+
 if nargin <= 3,
     nEpoches=50;
 end
@@ -22,11 +25,14 @@ if nargin <= 1,
     nMembershipFn=2;
 end
 
-finalRMSE=1000;
-nInputs=numel(trainData(1,:))-nOutput;
-minData=min(trainData);
+finalRMSE=1000; % Assuming maximum RMSE
+nInputs=numel(trainData(1,:))-nOutput; % Number of input variables
+
+minData=min(trainData); % Min of all columns
 rangeInput=max(trainData)-minData; %finding ranges of every input
+
 ctr2ctrDist= rangeInput/(nMembershipFn-1);
+
 for Epoches=1:nEpoches,
     % Estimating random mf parameters
     for j=1:1:nInputs,
@@ -36,7 +42,7 @@ for Epoches=1:nEpoches,
             b(j,i)=rand*.2+1.9;
         end
     end
-    
+
     %Calculating membership grades
     for m=1:length(trainData),
         for j=1:nInputs,
@@ -44,7 +50,7 @@ for Epoches=1:nEpoches,
                 membershipGrades(j,i)=1/(1+(abs((trainData(m,j)-c(j,i))/a(j,i)))^(2*b(j,i)));
             end
         end
-        
+
         %Calculating firing strength
         for i=1:nInputs,
             t=1;
@@ -57,12 +63,12 @@ for Epoches=1:nEpoches,
                 end
             end
         end
-        
+
         weights=prod(B);
-        
+
         %Calculating Normalised Firing
         weightNormalize=weights/sum(weights);
-        
+
         %Generating X of f=XZ
         for j=1:1:nInputs,
             X1(j,:)= trainData(m,j)*weightNormalize;
@@ -70,7 +76,7 @@ for Epoches=1:nEpoches,
         X1(nInputs+1,:)= weightNormalize;
         X(m,:)=reshape(X1,1,[]);
     end
-    
+
     %Evaluating consequent parameters(Z) for first output by solving linear equation
     for i=1:nOutput,
         Z(i).ZZ= X\trainData(:,nInputs+i);
@@ -88,9 +94,9 @@ for Epoches=1:nEpoches,
     for i=1:nOutput,
         finalSum=finalSum+sum((error(i).err(:))'.^2);
     end
-    
+
     RMSE=sqrt(finalSum/(length(trainData)*nOutput));
-    
+
     if RMSE<finalRMSE,
         finalRMSE=RMSE;
         Parameters.c=c;
@@ -103,4 +109,3 @@ for Epoches=1:nEpoches,
 end
 
 end
-
