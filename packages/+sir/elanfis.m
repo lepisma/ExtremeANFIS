@@ -26,7 +26,7 @@ function fis = elanfis(train_x, train_y, n_mfs, epochs)
         n_mfs = 2;
     end
 
-    n_observations, n_variables = size(train_x);
+    [n_observations, n_variables] = size(train_x);
     n_outputs = size(train_y, 2);
     n_rules = n_mfs ^ n_variables;
 
@@ -70,7 +70,7 @@ function fis = elanfis(train_x, train_y, n_mfs, epochs)
             % 00000000000000000000000
             for inp_i = 1 : n_variables
                 count = 1;
-                for k = 1 : n_mfs^(inp_i - 1)
+                for k = 1 : n_mfs ^ (inp_i - 1)
                     for mf_i = 1 : n_mfs
                         for l = 1 : n_mfs ^ (n_variables - inp_i)
                             rule_fire(inp_i, count) = mf_fire(inp_i, mf_i);
@@ -82,13 +82,14 @@ function fis = elanfis(train_x, train_y, n_mfs, epochs)
             % 00000000000000000000000
 
             weights = prod(rule_fire);
-            weights = weights / sum(weights); % Normalized
+            weights_n = weights / sum(weights); % Normalized
 
             % Weighted inputs
             for inp_i = 1 : n_variables
-                w_inp(inp_i, :) = train_x(obs_i, inp_i) * weights;
+                w_inp(inp_i, :) = train_x(obs_i, inp_i) * weights_n;
             end
-            w_inp(inp_i + 1, :) = weights;
+
+            w_inp(n_variables + 1, :) = weights_n;
 
             total_w_inp(obs_i, :) = reshape(w_inp, 1, []);
         end
@@ -96,7 +97,7 @@ function fis = elanfis(train_x, train_y, n_mfs, epochs)
         % Learning parameters
 
         for out_i = 1 : n_outputs
-            out(i).params = total_w_inp \ train_y(out_i);
+            out(out_i).params = total_w_inp \ train_y(:, out_i);
         end
 
         % Error checking
@@ -107,13 +108,13 @@ function fis = elanfis(train_x, train_y, n_mfs, epochs)
         error = sqrt(sum(sum((predictions - train_y) .^ 2)));
 
         if ep == 1
-            optimum_error = error
+            optimum_error = error;
             optimum_a = a;
             optimum_b = b;
             optimum_c = c;
             optimum_out = out;
         elseif error < optimum_error
-            optimum_error = error
+            optimum_error = error;
             optimum_a = a;
             optimum_b = b;
             optimum_c = c;
