@@ -1,4 +1,4 @@
-function fis = elanfis(train_x, train_y, n_mfs, epochs)
+function fis = elanfis(train_x, train_y, n_mfs, epochs, test_x, test_y)
     % Extreme Learning ANFIS
     %
     % Parameters
@@ -11,6 +11,10 @@ function fis = elanfis(train_x, train_y, n_mfs, epochs)
     %   Number of membership functions to use in all input.
     % `epochs`
     %   Number of random trials
+    % `test_x`
+    %   Test data (X)
+    % `test_y`
+    %   Test data target (Y)
     %
     % Returns
     % -------
@@ -25,20 +29,25 @@ function fis = elanfis(train_x, train_y, n_mfs, epochs)
     if nargin <= 3
         n_mfs = 2;
     end
-
-    [n_observations, n_variables] = size(train_x);
-    n_outputs = size(train_y, 2);
+    
+    total_x = [train_x; test_x];
+    total_y = [train_y; test_y];
+    
+    n_observations_train = size(train_x, 1);
+    
+    [n_observations, n_variables] = size(total_x);
+    n_outputs = size(total_y, 2);
     n_rules = n_mfs ^ n_variables;
 
-    range_observations = range(train_x);
-    min_observations = min(train_x);
+    range_observations = range(total_x);
+    min_observations = min(total_x);
 
     diff_c = range_observations / (n_mfs - 1);
 
     % Memory allocations
     w_inp = zeros(n_variables + 1, n_rules);
     total_w_inp = zeros(n_observations, (n_variables + 1) * n_rules);
-    predictions = zeros(size(train_y));
+    predictions = zeros(size(test_y));
     mf_fire = zeros(n_variables, n_mfs);
     rule_fire = zeros(n_variables, n_rules);
 
@@ -86,7 +95,7 @@ function fis = elanfis(train_x, train_y, n_mfs, epochs)
 
             % Weighted inputs
             for inp_i = 1 : n_variables
-                w_inp(inp_i, :) = train_x(obs_i, inp_i) * weights_n;
+                w_inp(inp_i, :) = total_x(obs_i, inp_i) * weights_n;
             end
 
             w_inp(n_variables + 1, :) = weights_n;
@@ -94,18 +103,18 @@ function fis = elanfis(train_x, train_y, n_mfs, epochs)
             total_w_inp(obs_i, :) = reshape(w_inp, 1, []);
         end
 
-        % Learning parameters
+        % Learning parameters from training data
 
         for out_i = 1 : n_outputs
-            out(out_i).params = total_w_inp \ train_y(:, out_i);
+            out(out_i).params = total_w_inp(1 : n_observations_train, :) \ train_y(:, out_i);
         end
 
-        % Error checking
+        % Error checking on testing data
         for out_i = 1 : n_outputs
-            predictions(:, out_i) = total_w_inp * out(out_i).params;
+            predictions(:, out_i) = total_w_inp(n_observations_train + 1 : n_observations, :) * out(out_i).params;
         end
 
-        error = sqrt(sum(sum((predictions - train_y) .^ 2)));
+        error = sqrt(sum(sum((predictions - test_y) .^ 2)));
 
         if ep == 1
             optimum_error = error;
