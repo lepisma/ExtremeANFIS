@@ -5,9 +5,12 @@ addpath '../../packages/';
 
 data = importdata('data_banknote_authentication.txt');
 
+% Removing extreme values from getting into testing data
+[extremes, data] = util.remove_extremes(data);
+
 % Leaving 200 for testing (100 for each class)
-train = [data(1:510, :); data(611:1272, :)];
-test = [data(511:610, :); data(1273:1372, :)];
+test = [data(1:100, :); data(end-99:end, :)];
+train = [data(101:end-100, :); extremes];
 
 % Constants
 n_mfs = 4;
