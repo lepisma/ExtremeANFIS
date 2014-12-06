@@ -71,7 +71,7 @@ function fis = elanfis(train_x, train_y, n_mfs, epochs, test_x, test_y)
             % Membership function firing strengths
             for inp_i = 1 : n_variables
                 for mf_i = 1 : n_mfs
-                    mf_fire(inp_i, mf_i) = 1 / (1 + (abs((train_x(obs_i, inp_i) - c(inp_i, mf_i)) / a(inp_i, mf_i))) ^ (2 * b(inp_i, mf_i)));
+                    mf_fire(inp_i, mf_i) = 1 / (1 + (abs((total_x(obs_i, inp_i) - c(inp_i, mf_i)) / a(inp_i, mf_i))) ^ (2 * b(inp_i, mf_i)));
                 end
             end
 
