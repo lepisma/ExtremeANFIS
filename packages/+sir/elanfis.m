@@ -116,13 +116,7 @@ function fis = elanfis(train_x, train_y, n_mfs, epochs, test_x, test_y)
 
         error = sqrt(sum(sum((predictions - test_y) .^ 2)));
 
-        if ep == 1
-            optimum_error = error;
-            optimum_a = a;
-            optimum_b = b;
-            optimum_c = c;
-            optimum_out = out;
-        elseif error < optimum_error
+        if (ep == 1) || (error < optimum_error)
             optimum_error = error;
             optimum_a = a;
             optimum_b = b;
