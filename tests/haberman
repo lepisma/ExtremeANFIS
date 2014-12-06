@@ -1,6 +1,6 @@
 % Classification test
 
-raw = importdata('..tests/haberman.data');
+raw = importdata('..datasets/haberman.data');
 
 % -------------------- haberman
 data_1 = [];
