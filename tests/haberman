@@ -2,7 +2,7 @@
 
 raw = importdata('..datasets/haberman.data');
 
-% -------------------- haberman
+% -------------------- dataset - haberman
 data_1 = [];
 data_2 = [];
 class_1 = 1;
