@@ -1,4 +1,4 @@
-% Classification test for iriss
+% Classification test for iris
 % 3 classes, training 2 classifiers
 clear all; close all; clc;
 addpath '../../packages/';
