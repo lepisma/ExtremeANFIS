@@ -13,7 +13,7 @@ test = [data(1:100, :); data(end-99:end, :)];
 train = [data(101:end-100, :); extremes];
 
 % Constants
-n_mfs = 4;
+n_mfs = 3;
 anfis_iter = 10;
 elanfis_iter = 50;
 
