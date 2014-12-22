@@ -142,3 +142,12 @@ function mf_params = gen_random_mf(x_train, var_ranges, n_variables, n_mfs)
     end
 
 end
+
+function error = rmse(fis, data_test)
+    % Calculates the root mean squared error for a test data
+    % Faster than method in rmse.m
+
+    output = evalfismex(data_test(:, 1 : end - 1), fis, 101);
+    error = rms(output - data_test(:, end));
+
+end
