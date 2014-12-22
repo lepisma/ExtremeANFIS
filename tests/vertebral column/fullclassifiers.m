@@ -78,6 +78,6 @@ a_out = util.softmax(anfis_out);
 ex_out = util.softmax(exanfis_out);
 
 % Printing percentage error in each method
-anfis_err = sum(sum(abs(test_out - a_out))) * 100 / size(test, 1)
-elanfis_err = sum(sum(abs(test_out - e_out))) * 100 / size(test, 1)
-exanfis_err = sum(sum(abs(test_out - ex_out))) * 100 / size(test, 1)
+anfis_err = sum(sum(abs(test_out - a_out))) * 50 / size(test, 1)
+elanfis_err = sum(sum(abs(test_out - e_out))) * 50 / size(test, 1)
+exanfis_err = sum(sum(abs(test_out - ex_out))) * 50 / size(test, 1)

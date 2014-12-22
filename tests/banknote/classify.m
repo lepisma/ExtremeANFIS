@@ -41,6 +41,6 @@ a_out = util.ova_clear(anfis_out);
 ex_out = util.ova_clear(exanfis_out);
 
 % Printing percentage error in each method
-anfis_err = sum(sum(abs(test(:, end) - a_out(:, 1)))) * 100 / size(test, 1)
-elanfis_err = sum(sum(abs(test(:, end) - e_out(:, 1)))) * 100 / size(test, 1)
-exanfis_err = sum(sum(abs(test(:, end) - ex_out(:, 1)))) * 100 / size(test, 1)
+anfis_err = sum(sum(abs(test(:, end) - a_out(:, 1)))) * 50 / size(test, 1)
+elanfis_err = sum(sum(abs(test(:, end) - e_out(:, 1)))) * 50 / size(test, 1)
+exanfis_err = sum(sum(abs(test(:, end) - ex_out(:, 1)))) * 50 / size(test, 1)
