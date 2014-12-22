@@ -54,11 +54,17 @@ exanfis_1 = extreme.exanfis(train_1, n_mfs, elanfis_iter, [test, test_out(:, 1)]
 exanfis_2 = extreme.exanfis(train_2, n_mfs, elanfis_iter, [test, test_out(:, 2)]);
 exanfis_3 = extreme.exanfis(train_3, n_mfs, elanfis_iter, [test, test_out(:, 3)]);
 
+% Training zanfis
+zfis_1 = zfis.zfis(train_1, n_mfs, elanfis_iter, [test, test_out(:, 1)]);
+zfis_2 = zfis.zfis(train_2, n_mfs, elanfis_iter, [test, test_out(:, 2)]);
+zfis_3 = zfis.zfis(train_3, n_mfs, elanfis_iter, [test, test_out(:, 3)]);
+
 % Testing
 
 anfis_out = zeros(size(test, 1), 3);
 elanfis_out = zeros(size(test, 1), 3);
 exanfis_out = zeros(size(test, 1), 3);
+zfis_out = zeros(size(test, 1), 3);
 
 anfis_out(:, 1) = evalfis(test, anfis_1);
 anfis_out(:, 2) = evalfis(test, anfis_2);
@@ -72,12 +78,18 @@ exanfis_out(:, 1) = evalfis(test, exanfis_1);
 exanfis_out(:, 2) = evalfis(test, exanfis_2);
 exanfis_out(:, 3) = evalfis(test, exanfis_3);
 
+zfis_out(:, 1) = evalfis(test, zfis_1);
+zfis_out(:, 2) = evalfis(test, zfis_2);
+zfis_out(:, 3) = evalfis(test, zfis_3);
+
 % Resolving classes
 e_out = util.softmax(elanfis_out);
 a_out = util.softmax(anfis_out);
 ex_out = util.softmax(exanfis_out);
+z_out = util.softmax(zfis_out);
 
 % Printing percentage error in each method
 anfis_err = sum(sum(abs(test_out - a_out))) * 50 / size(test, 1)
 elanfis_err = sum(sum(abs(test_out - e_out))) * 50 / size(test, 1)
 exanfis_err = sum(sum(abs(test_out - ex_out))) * 50 / size(test, 1)
+zfis_err = sum(sum(abs(test_out - z_out))) * 50 / size(test, 1)

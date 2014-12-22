@@ -17,7 +17,7 @@ test_out = [[ones(10, 1); zeros(20, 1)], ...
             [zeros(20, 1); ones(10, 1)]];
 
 % Constants
-n_mfs = 3;
+n_mfs = 4;
 anfis_iter = 10;
 elanfis_iter = 50;
 
