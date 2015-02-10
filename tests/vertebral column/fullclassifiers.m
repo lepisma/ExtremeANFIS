@@ -17,10 +17,9 @@ NO_idx = strcmp(data.G, 'NO') * 3;
 idx = sum([DH_idx, SL_idx, NO_idx], 2);
 
 % Filtering numbers
-data = [table2array(data(:, 1:6)), idx];
-
+data = [table2array(data(:, 1:6)), idx];    
 % Test train split with ratio 0.2 (takes care of extremes)
-[test, train, n_test, ~] = util.test_train_split(data, 0.2);
+[test, train, n_test, ~] = util.test_train_split(data, 0.25);
 
 % Creating data for each classifier
 train_1 = [train(:, 1:end-1), train(:, end) == 1];
@@ -83,13 +82,24 @@ zfis_out(:, 2) = evalfis(test, zfis_2);
 zfis_out(:, 3) = evalfis(test, zfis_3);
 
 % Resolving classes
-e_out = util.softmax(elanfis_out);
-a_out = util.softmax(anfis_out);
-ex_out = util.softmax(exanfis_out);
-z_out = util.softmax(zfis_out);
+e_out = util.ova_clear(elanfis_out);
+a_out = util.ova_clear(anfis_out);
+ex_out = util.ova_clear(exanfis_out);
+z_out = util.ova_clear(zfis_out);
 
 % Printing percentage error in each method
 anfis_err = sum(sum(abs(test_out - a_out))) * 50 / size(test, 1)
 elanfis_err = sum(sum(abs(test_out - e_out))) * 50 / size(test, 1)
 exanfis_err = sum(sum(abs(test_out - ex_out))) * 50 / size(test, 1)
 zfis_err = sum(sum(abs(test_out - z_out))) * 50 / size(test, 1)
+
+% RMSE
+err = abs(anfis_out - test_out);
+rms(err(:))
+err = abs(elanfis_out - test_out);
+rms(err(:))
+err = abs(exanfis_out - test_out);
+rms(err(:))
+err = abs(zfis_out - test_out);
+rms(err(:))
+

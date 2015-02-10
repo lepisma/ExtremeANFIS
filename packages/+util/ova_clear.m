@@ -1,7 +1,7 @@
 function int_out = ova_clear(out)
     % This function gives the output for a one-vs-all system
     % by resolving classification doubts. Assumes number of classifiers
-    % equal to (cl - 1), where cl is the number of classes.
+    % equal to the number of classes.
     % 
     % Parameters
     % ----------
@@ -9,7 +9,7 @@ function int_out = ova_clear(out)
     %   the output from the system of fisses
     %   (n * c)
     %   n = number of observations
-    %   c = number of classifiers = (cl - 1)
+    %   c = number of classifiers
     %
     % Returns
     % -------
@@ -22,14 +22,12 @@ function int_out = ova_clear(out)
     [n, c] = size(out);
     
     int_out = zeros(n, c);
-    dist_from_one = abs(ones(n, c) - out); % Confidence indicator
+    dist_from_thresh = out - (0.5 * ones(n, c));
     
     for obs = 1:n
-        [min_val, min_idx] = min(dist_from_one(obs, :));
-        if min_val < 0.5
-            int_out(obs, min_idx) = 1;
+        [max_val, max_idx] = max(dist_from_thresh(obs, :));
+        if max_val > 0
+            int_out(obs, max_idx) = 1;
         end
     end
-    
-    int_out = [int_out, ~sum(int_out, 2)];
 end

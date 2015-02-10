@@ -4,17 +4,14 @@ clear all; close all; clc;
 addpath '../../packages/';
 
 data = importdata('data_banknote_authentication.txt');
+data(:, 1:end-1) = util.normalize(data(:, 1:end-1));
 
-% Removing extreme values from getting into testing data
-[extremes, data] = util.remove_extremes(data);
-
-% Leaving 200 for testing (100 for each class)
-test = [data(1:100, :); data(end-99:end, :)];
-train = [data(101:end-100, :); extremes];
+% Test train split
+[test, train, n_test, ~] = util.test_train_split(data, 0.25);
 
 % Constants
-n_mfs = 3;
-anfis_iter = 10;
+n_mfs = 2;
+anfis_iter = 50;
 elanfis_iter = 50;
 
 % Training anfis
@@ -47,7 +44,17 @@ ex_out = util.ova_clear(exanfis_out);
 z_out = util.ova_clear(zfis_out);
 
 % Printing percentage error in each method
-anfis_err = sum(sum(abs(test(:, end) - a_out(:, 1)))) * 50 / size(test, 1)
-elanfis_err = sum(sum(abs(test(:, end) - e_out(:, 1)))) * 50 / size(test, 1)
-exanfis_err = sum(sum(abs(test(:, end) - ex_out(:, 1)))) * 50 / size(test, 1)
-zfis_err = sum(sum(abs(test(:, end) - z_out(:, 1)))) * 50 / size(test, 1)
+anfis_err = sum(sum(abs(test(:, end) - a_out))) * 50 / size(test, 1)
+elanfis_err = sum(sum(abs(test(:, end) - e_out))) * 50 / size(test, 1)
+exanfis_err = sum(sum(abs(test(:, end) - ex_out))) * 50 / size(test, 1)
+zfis_err = sum(sum(abs(test(:, end) - z_out))) * 50 / size(test, 1)
+
+% RMSE
+err = abs(anfis_out - test(:, end));
+rms(err(:))
+err = abs(elanfis_out - test(:, end));
+rms(err(:))
+err = abs(exanfis_out - test(:, end));
+rms(err(:))
+err = abs(zfis_out - test(:, end));
+rms(err(:))
