@@ -41,9 +41,9 @@ anfis_2 = anfis(train_2, n_mfs, anfis_iter);
 anfis_3 = anfis(train_3, n_mfs, anfis_iter);
 
 % Training elanfis
-elanfis_1 = sir.elanfis(train_1(:, 1:end-1), train_1(:, end), n_mfs, elanfis_iter, test, test_out(:, 1));
-elanfis_2 = sir.elanfis(train_2(:, 1:end-1), train_2(:, end), n_mfs, elanfis_iter, test, test_out(:, 2));
-elanfis_3 = sir.elanfis(train_3(:, 1:end-1), train_3(:, end), n_mfs, elanfis_iter, test, test_out(:, 3));
+elanfis_1 = el.elanfis(train_1(:, 1:end-1), train_1(:, end), n_mfs, elanfis_iter, test, test_out(:, 1));
+elanfis_2 = el.elanfis(train_2(:, 1:end-1), train_2(:, end), n_mfs, elanfis_iter, test, test_out(:, 2));
+elanfis_3 = el.elanfis(train_3(:, 1:end-1), train_3(:, end), n_mfs, elanfis_iter, test, test_out(:, 3));
 
 % Training exanfis (diagnostic purpose)
 exanfis_1 = extreme.exanfis(train_1, n_mfs, elanfis_iter, [test, test_out(:, 1)]);

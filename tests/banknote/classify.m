@@ -18,7 +18,7 @@ elanfis_iter = 50;
 afis = anfis(train, n_mfs, anfis_iter);
 
 % Training elanfis
-elfis = sir.elanfis(train(:, 1:end-1), train(:, end), n_mfs, elanfis_iter, test(:, 1:end-1), test(:, end));
+elfis = el.elanfis(train(:, 1:end-1), train(:, end), n_mfs, elanfis_iter, test(:, 1:end-1), test(:, end));
 
 % Training exanfis (diagnostic purpose)
 exfis = extreme.exanfis(train, n_mfs, elanfis_iter, test);
